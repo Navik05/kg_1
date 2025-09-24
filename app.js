@@ -3,19 +3,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 // Сцена
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(0x42AAFF)
+scene.background = new THREE.Color(0xffffff)
 
 // Камера
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
-camera.position.z = 5
-
-// Источники света
-const ambientLight = new THREE.AmbientLight('white', 0.2)
-scene.add(ambientLight)
-
-const dirLight = new THREE.DirectionalLight('white', 1)
-dirLight.position.set(3, 3, 3)
-scene.add(dirLight)
+camera.position.set(3, 3, 7)
 
 // Рендеринг
 const renderer = new THREE.WebGLRenderer()
@@ -29,9 +21,34 @@ controls.dampingFactor = 0.05
 controls.minDistance = 1.5
 controls.maxDistance = 15
 
+// Функция создания линии
+function createLine(points, color)
+{
+    const material = new THREE.LineBasicMaterial({color: color})
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
+    const line = new THREE.Line(lineGeometry, material)
+    return line
+}
+
+// Ось X
+const points = []
+points.push(new THREE.Vector3(-5, 0, 0))  // Начальная точка
+points.push(new THREE.Vector3(5, 0, 0))   // Конечная точка
+scene.add(createLine(points, 'red'))
+
+// Ось Y
+points [0] = (new THREE.Vector3(0, -5, 0))
+points [1] = (new THREE.Vector3(0, 5, 0))
+scene.add(createLine(points, 'green'))
+
+// Ось Z
+points [0] = (new THREE.Vector3(0, 0, -5))
+points [1] = (new THREE.Vector3(0, 0, 5))
+scene.add(createLine(points, 'blue'))
+
 // Создание буквы К
 const letter = new THREE.Group()
-const material = new THREE.MeshStandardMaterial({color: 'blue'})
+const material = new THREE.LineBasicMaterial({color: 'blue'})
 
 const verticalGeometry = new THREE.BoxGeometry(0.5, 3, 0.5)
 const vertical = new THREE.Mesh(verticalGeometry, material)
@@ -52,10 +69,11 @@ letter.add(bottomDiagonal)
 letter.position.x = 1;
 
 const group = new THREE.Group()
-group.add(letter)
+group.add(letter) 
+
 scene.add(group)
 
-// Анимация по нажатию на букву
+/* // Анимация по нажатию на букву
 let isAnimation = false
 
 const raycaster = new THREE.Raycaster()
@@ -91,7 +109,7 @@ function onMouseClick(event){
     }
 }
 
-window.addEventListener('click', onMouseClick)
+window.addEventListener('click', onMouseClick) */
 
 // Бесконенечная функция рендера
 function animate(){
