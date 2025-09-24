@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import {Matrix4} from './Matrix4.js'
 
 // Сцена
 const scene = new THREE.Scene()
@@ -21,57 +22,22 @@ controls.dampingFactor = 0.05
 controls.minDistance = 1.5
 controls.maxDistance = 15
 
-// Функция создания линии
-function createLine(points, color)
-{
-    const material = new THREE.LineBasicMaterial({color: color})
-    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
-    const line = new THREE.Line(lineGeometry, material)
-    return line
-}
+// Добавление осей координат
+const axesHelper = new THREE.AxesHelper(5)
+scene.add(axesHelper)
 
-// Ось X
-const points = []
-points.push(new THREE.Vector3(-5, 0, 0))  // Начальная точка
-points.push(new THREE.Vector3(5, 0, 0))   // Конечная точка
-scene.add(createLine(points, 'red'))
+// Создаем букву К
+const letterK = createLetterI()
+scene.add(letterK)
 
-// Ось Y
-points [0] = (new THREE.Vector3(0, -5, 0))
-points [1] = (new THREE.Vector3(0, 5, 0))
-scene.add(createLine(points, 'green'))
 
-// Ось Z
-points [0] = (new THREE.Vector3(0, 0, -5))
-points [1] = (new THREE.Vector3(0, 0, 5))
-scene.add(createLine(points, 'blue'))
-
-// Создание буквы К
-const letter = new THREE.Group()
-const material = new THREE.LineBasicMaterial({color: 'blue'})
-
-const verticalGeometry = new THREE.BoxGeometry(0.5, 3, 0.5)
-const vertical = new THREE.Mesh(verticalGeometry, material)
-letter.add(vertical)
-
-const topDiagonalGeometry = new THREE.BoxGeometry(0.5, 2, 0.5)
-const topDiagonal = new THREE.Mesh(topDiagonalGeometry, material)
-topDiagonal.position.set(1, -0.5, 0)
-topDiagonal.rotation.z = Math.PI / 4
-letter.add(topDiagonal)
-
-const bottomDiagonalGeometry = new THREE.BoxGeometry(0.5, 2, 0.5)
-const bottomDiagonal = new THREE.Mesh(bottomDiagonalGeometry, material)
-bottomDiagonal.position.set(1, 0.6, 0)
-bottomDiagonal.rotation.z = -Math.PI / 4
-letter.add(bottomDiagonal)
-
-letter.position.x = 1;
-
+/*
 const group = new THREE.Group()
 group.add(letter) 
 
-scene.add(group)
+scene.add(group) */
+
+
 
 /* // Анимация по нажатию на букву
 let isAnimation = false
@@ -118,3 +84,57 @@ function animate(){
     renderer.render(scene, camera)
 }
 animate() 
+
+// Создание линии
+function createLine(points){
+    const material = new THREE.LineBasicMaterial({color: 'black'})
+    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
+    const line = new THREE.Line(lineGeometry, material)
+    return line
+}
+
+// Создание буквы I из линий
+function createLetterI() {
+    const letterGroup = new THREE.Group()
+    const points = [
+    // Средняя палка
+    [[0, 2, 1], [0, -2, 1]],
+    [[0, -2, 0], [0, 2, 0]],
+    [[1, -2, 0], [1, 2, 0]],
+    [[1, -2, 1], [1, 2, 1]],
+    
+    // Верхняя палка
+    [[-1, 2, 0], [2, 2, 0]],
+    [[2, 2, 0], [2, 2, 1]],
+    [[2, 2, 1], [-1, 2, 1]],
+    [[-1, 2, 1], [-1, 2, 0]],
+    [[-1, 2, 0], [-1, 3, 0]],
+    [[-1, 3, 0], [2, 3, 0]],
+    [[2, 3, 0], [2, 3, 1]],
+    [[2, 3, 0], [2, 2, 0]],
+    [[2, 2, 1], [2, 3, 1]],
+    [[2, 3, 1], [-1, 3, 1]],
+    [[-1, 3, 1], [-1, 3, 0]],
+    [[-1, 3, 1], [-1, 2, 1]],
+    
+    // Нижняя палка
+    [[-1, -2, 0], [2, -2, 0]],
+    [[2, -2, 0], [2, -2, 1]],
+    [[2, -2, 1], [-1, -2, 1]],
+    [[-1, -2, 1], [-1, -2, 0]],
+    [[-1, -2, 0], [-1, -3, 0]],
+    [[-1, -3, 0], [2, -3, 0]],
+    [[2, -3, 0], [2, -3, 1]],
+    [[2, -3, 0], [2, -2, 0]],
+    [[2, -2, 1], [2, -3, 1]],
+    [[2, -3, 1], [-1, -3, 1]],
+    [[-1, -3, 1], [-1, -3, 0]],
+    [[-1, -3, 1], [-1, -2, 1]]
+    ]
+
+    points.map(([start, end]) => 
+        createLine([new THREE.Vector3(...start), new THREE.Vector3(...end)])
+    ).forEach(points => letterGroup.add(points))
+
+    return letterGroup
+}
